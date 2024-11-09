@@ -36,24 +36,58 @@ FSM有限状态机 & FSA有限自动状态机
 - 非确定性有限自动机：其与DFA的区别在于对同一个输入，可能有多个状态；
     - 典型的有Epsilon Transitions($\epsilon$)
 * proof: DFA<==>NFA
-    * 状态的合并union和拆分
+    * 状态的合并union和拆分；最终生成的 DFA/NFA 能够模拟 NFA/DFA 的所有转换，并无歧义性
 
 ### 
 - NFA without accepting state: Add an accepting state without transitions
 - 交叉闭包：$L(M)=L(M_1) \union L(M_2) \qquad (q_0,q_1)$
 
 
-### 06-regular grammars正则文法
-$S->\lameda$产生空字符串
-$S->SS$指任意的S连接S仍然是S
-`S->aB|A`是两个产生规则
+### regular Language 正则语言
+`(0+1)*`和`(0*+ 1*)*`是等价的
+
+
+#### regular grammars 正则文法
+什么是文法？G=(V,T,S,P) 四元组：变量，起始变量，常量，生成规则
+$S->\lameda$ 产生空字符串
+$S->SS$ 指任意的S连接S仍然是S
+`S->aB|A`是两个产生规则（式子）
+
 - 线性文法和非线性文法：`->`右边有两个变量；Right-Linear Grammars右线性文法：如果有，变量一定在最右边
-- 左线性文法或右线性文法生成的语言一定是正则语言
+- 左线性文法和右线性文法合为**正则文法**
 * 证明：正则文法->正则语言
     * `S->bB|a`显然有`S-(b)->B`&`S-(a)->(())`
     * 状态转化显然可以表示为右线性正则文法
     * 左线性文法应该先转化为右线性文法：$L(G)=L(G')^R$，由于正则语言在翻转上封闭，故而左线性也是正则语言
 
-### Non-regular Language
+#### Pumping--Non-regular Language
 - Pumping lemma泵引理是正则语言的必要条件
-- 由鸽巢原理得状态组合的重复性(walk指点和边都重复)
+- 由鸽巢原理得状态组合的重复性(walk指点和边都重复)：必然有 $w=xy^{i}z ,\, i \geq 0$
+    - 我们不关心z的长度，但是可以明确的是 $\left| xy \right| \leq p && \left| y \right| \leq 1$(p=minLength)
+    - 也就是说，对 $w=xyz$ 证明 $w'=xy^{i}z \notin L$
+
+
+### Context-Free Language
+#### Context-Free Grammars 上下文无关文法
+上下文无关文法：Variable -> String of variables and terminals
+而上下文无关文法定义的语言就是上下文无关语言
+- Examples
+    - $S->aSa|bSb|\lameda$ L(G)= {$ww^{R}: w\in \{ a,b \}^*$}
+    - $S->aSb|SS|\lameda$ L(G)={$w:n_{a}(w)=n_b(w)$, and $n_{a}(v) \geq n_{b}(v)$ in any prefix v}
+
+- 我们可以通过`Derivation Tree派生树(parse tree解析树)`来构建字符串（S->节点直到生成全部叶子节点无变量）
+- **Ambiguity**二义性成为难以解决的问题（**需要注意的是，这里的+是“连接”的意思，而非正则语言的“或”意义**）
+    - 在没有运算优先级的情况下，即使是`a+a*a`的派生树也会出现问题(E->E+E|E*E|a)
+    - Sometimes it is possible to find a non-ambiguous grammar for a language. But, in general it is difficult to achieve this. (E->E+T|T; T->T*F|F; F->(E)|a)
+    - L={$\{a^n b^n c^m\} \union \{ a^n b^m c^m \} $} ($n,m \geq 0$)对于$a^n b^n c^n$显然就有不同的派生树
+
+```
+正则语言和上下文无关语言的交集是上下文无关语言
+- 通过定义我们知道：
+    - 正则语言的文法是左线性文法和右线性文法的集合，也即`S->aS|a`||`S->Sa|a`。a是包含空字符串的任何常量
+    - 而上下文无关文法是
+```
+#### Simplifications of Context-Free Grammars
+
+
+### Pushdown Automaton -- PDA 下推自动机
