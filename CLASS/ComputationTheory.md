@@ -49,7 +49,7 @@ FSM有限状态机 & FSA有限自动状态机
 
 #### regular grammars 正则文法
 什么是文法？G=(V,T,S,P) 四元组：变量，起始变量，常量，生成规则
-$S->\lameda$ 产生空字符串
+$S->\epsilon$ 产生空字符串
 $S->SS$ 指任意的S连接S仍然是S
 `S->aB|A`是两个产生规则（式子）
 
@@ -72,8 +72,8 @@ $S->SS$ 指任意的S连接S仍然是S
 上下文无关文法：Variable -> String of variables and terminals
 而上下文无关文法定义的语言就是上下文无关语言
 - Examples
-    - $S->aSa|bSb|\lameda$ L(G)= {$ww^{R}: w\in \{ a,b \}^*$}
-    - $S->aSb|SS|\lameda$ L(G)={$w:n_{a}(w)=n_b(w)$, and $n_{a}(v) \geq n_{b}(v)$ in any prefix v}
+    - $S->aSa|bSb|\epsilon$ L(G)= {$ww^{R}: w\in \{ a,b \}^*$}
+    - $S->aSb|SS|\epsilon$ L(G)={$w:n_{a}(w)=n_b(w)$, and $n_{a}(v) \geq n_{b}(v)$ in any prefix v}
 
 - 我们可以通过`Derivation Tree派生树(parse tree解析树)`来构建字符串（S->节点直到生成全部叶子节点无变量）
 - **Ambiguity**二义性成为难以解决的问题（**需要注意的是，这里的+是“连接”的意思，而非正则语言的“或”意义**）
@@ -88,6 +88,30 @@ $S->SS$ 指任意的S连接S仍然是S
     - 而上下文无关文法是
 ```
 #### Simplifications of Context-Free Grammars
-
+移除某个变量；remove Useless Productions（没有结果或不能抵达）
+- Chomsky Normal Form
+    - `A->BC|a(两个变量或一个常量)`，转化方法是增加变量（常量增为变量）
+    - an equivalent grammar in Chomsky Normal Form
+- Greinbach Normal Form
+    - $A->aV_1V_2...V_k,\,(k\geq 0)$
 
 ### Pushdown Automaton -- PDA 下推自动机
+- PDA: `$`为stack head, `z`为stack top
+    - `(q)----(a(Input symbol), b(pop sysbol)->c(push symbol))---->(q)`
+* 注意：`b(pop sysbol)->c(push symbol)`均是从top向下逐个写的
+- PDAs are non-deterministic($\epsilon - transition$)
+    - 也容易产生match found $\epsilon , \$->\$ || \epsilon, \epsilon->\epsilon$
+- All the input is consumed  AND  The last state is an accepting state
+    - we do not care about the stack contents at the end of the accepting computation
+    - 我们**只需要一条路径来证明正确性**，而不正确的路径我们不关心：$\epsilon, \epsilon->\epsilon$ 尽管这样的可能带来多余的路径
+- Transition function: $\delta(q_1,a,w_1)= \{(q_2,w_2), (q_3,w_3)\}$
+    - PDA 的基本组成部分：(...省略) 栈符号集：栈中允许的符号集合。初始栈符号：栈开始时的符号。
+    - 瞬时描述(Instantaneous Description):`(q(CurrentState), u(RemainingInput), s(CurrentStackContents))`是执行该步后的状态
+        - 用`>`指示瞬时描述的前进，$>^{*}(上方)$表示快进
+L(M)={$w: (q_0,w,z) >^{*} (q_f,\epsilon,s)$}
+
+* PDA和CFG的转化
+    * CFG转化为PDA：将CFG规则全作为$\epsilon$入栈规则，而将常量作为常量出栈规则
+        * ($q_0$)---$\epsilon, \$->S\$$-->($q_1$)--规则-->($q_1$)--($\epsilon, \$->\$$)-->((q))
+    * PDA转化为CFG
+        * 首先对PDA进行预处理
